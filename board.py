@@ -10,6 +10,8 @@ class Board:
         self.occupied = 0
 
         self.side_to_move = white
+        self.castling = 1111
+        self.en_passant = -1
 
     def initialize_bitboard(self, fen=None):
         if not fen:
