@@ -1,159 +1,201 @@
 from attacks import *
 from constants import *
-from basefunctions import pop_lsb, get_bit
-from moves import encode_move
+from basefunctions import pop_lsb, encode_move
+from makemove import make_move, undo_move
+from legal import is_square_attacked
 
 
 def generate_moves(board):
 
     moves = []
+    legal_moves = []
 
-    if board.side_to_move == white:
+    side_to_move = board.side_to_move
 
-        pawns = board.bitboards[white_pawn]
-        knights = board.bitboards[white_knight]
-        bishops = board.bitboards[white_bishop]
-        rooks = board.bitboards[white_rook]
-        queens = board.bitboards[white_queen]
+    if side_to_move == WHITE:
 
-        square = board.bitboards[white_king].bit_length() - 1
-        attacks = king_attacks(square)
-        for attack in attacks:
-            if not get_bit(board.white_occ, attack):
-                moves.append(encode_move(square, attack))
+        pawns = board.bitboards[WHITE_PAWN]
+        knights = board.bitboards[WHITE_KNIGHT]
+        bishops = board.bitboards[WHITE_BISHOP]
+        rooks = board.bitboards[WHITE_ROOK]
+        queens = board.bitboards[WHITE_QUEEN]
+
+        king_square = board.bitboards[WHITE_KING].bit_length() - 1
+        attacks = king_attacks(king_square)
+
+        attacks &= ~board.white_occ
+
+        while attacks:
+            target, attacks = pop_lsb(attacks)
+            moves.append(encode_move(king_square, target))
 
         while pawns:
             square, pawns = pop_lsb(pawns)
-            attacks = pawn_attacks(square, board.side_to_move)
-            pushes = pawn_pushes(square, board.side_to_move)
-            double_pushes = pawn_double_pushes(
-                square, board.occupied, board.side_to_move
-            )
+            attacks = pawn_attacks(square, side_to_move)
+            pushes = pawn_pushes(square, side_to_move)
+            double_pushes = pawn_double_pushes(square, side_to_move)
+            attacks &= board.black_occ
+            pushes &= ~board.occupied
+            double_pushes &= ~board.occupied
+            double_pushes &= ~(board.occupied << 8)
+
             while attacks:
-                attack, attacks = pop_lsb(attacks)
-                if get_bit(board.black_occ, attack):
-                    moves.append(encode_move(square, attack))
+                target, attacks = pop_lsb(attacks)
+
+                moves.append(encode_move(square, target))
 
             while pushes:
-                push, pushes = pop_lsb(attacks)
-                if not get_bit(board.occupied, push):
-                    moves.append(encode_move(square, push))
+                target, pushes = pop_lsb(pushes)
+
+                moves.append(encode_move(square, target))
 
             while double_pushes:
-                double_push, double_pushes = pop_lsb(attacks)
-                if not get_bit(board.occupied, double_push) and not get_bit(
-                    board.occupied, double_push - 8
-                ):
-                    moves.append(encode_move(square, double_push))
+                target, double_pushes = pop_lsb(double_pushes)
+
+                moves.append(encode_move(square, target))
 
         while knights:
             square, knights = pop_lsb(knights)
             attacks = knight_attacks(square)
 
+            attacks &= ~board.white_occ
+
             while attacks:
-                attack, attacks = pop_lsb(attacks)
-                if not get_bit(board.white_occ):
-                    moves.append(encode_move(square, attacks))
+                target, attacks = pop_lsb(attacks)
+                moves.append(encode_move(square, target))
 
         while bishops:
             square, bishops = pop_lsb(bishops)
             attacks = bishop_attacks(square, board.occupied)
 
+            attacks &= ~board.white_occ
+
             while attacks:
-                attack, attacks = pop_lsb(attacks)
-                if not get_bit(board.white_occ):
-                    moves.append(encode_move(square, attacks))
+                target, attacks = pop_lsb(attacks)
+                moves.append(encode_move(square, target))
 
         while rooks:
             square, rooks = pop_lsb(rooks)
             attacks = rook_attacks(square, board.occupied)
 
+            attacks &= ~board.white_occ
+
             while attacks:
-                attack, attacks = pop_lsb(attacks)
-                if not get_bit(board.white_occ):
-                    moves.append(encode_move(square, attacks))
+                target, attacks = pop_lsb(attacks)
+                moves.append(encode_move(square, target))
 
         while queens:
             square, queens = pop_lsb(queens)
             attacks = queen_attacks(square, board.occupied)
 
-            while attacks:
-                attack, attacks = pop_lsb(attacks)
-                if not get_bit(board.white_occ):
-                    moves.append(encode_move(square, attacks))
+            attacks &= ~board.white_occ
 
-        return moves
+            while attacks:
+                target, attacks = pop_lsb(attacks)
+                moves.append(encode_move(square, target))
+
+        for move in moves:
+
+            undo = make_move(move, board)
+
+            king_square = board.bitboards[WHITE_KING].bit_length() - 1
+
+            if not is_square_attacked(king_square, BLACK, board):
+                legal_moves.append(move)
+
+            undo_move(undo, board)
 
     else:
 
-        pawns = board.bitboards[black_pawn]
-        knights = board.bitboards[black_knight]
-        bishops = board.bitboards[black_bishop]
-        rooks = board.bitboards[black_rook]
-        queens = board.bitboards[black_queen]
+        pawns = board.bitboards[BLACK_PAWN]
+        knights = board.bitboards[BLACK_KNIGHT]
+        bishops = board.bitboards[BLACK_BISHOP]
+        rooks = board.bitboards[BLACK_ROOK]
+        queens = board.bitboards[BLACK_QUEEN]
 
-        attacks = king_attacks(board.bitboards[black_king].bit_length() - 1)
-        moves.append(encode_move(attacks))
+        king_square = board.bitboards[BLACK_KING].bit_length() - 1
+        attacks = king_attacks(king_square)
+
+        attacks &= ~board.black_occ
+
+        while attacks:
+            target, attacks = pop_lsb(attacks)
+            moves.append(encode_move(king_square, target))
 
         while pawns:
             square, pawns = pop_lsb(pawns)
-            attacks = pawn_attacks(square, board.side_to_move)
-            pushes = pawn_pushes(square, board.side_to_move)
-            double_pushes = pawn_double_pushes(
-                square, board.occupied, board.side_to_move
-            )
+            attacks = pawn_attacks(square, side_to_move)
+            pushes = pawn_pushes(square, side_to_move)
+            double_pushes = pawn_double_pushes(square, side_to_move)
+            attacks &= board.white_occ
+            pushes &= ~board.occupied
+            double_pushes &= ~board.occupied
+            double_pushes &= ~(board.occupied >> 8)
 
             while attacks:
-                attack, attacks = pop_lsb(attacks)
-                if get_bit(board.white_occ, attack):
-                    moves.append(encode_move(attack))
+                target, attacks = pop_lsb(attacks)
+
+                moves.append(encode_move(square, target))
 
             while pushes:
-                push, pushes = pop_lsb(attacks)
-                if not get_bit(board.occupied, push):
-                    moves.append(encode_move(push))
+                target, pushes = pop_lsb(pushes)
+
+                moves.append(encode_move(square, target))
 
             while double_pushes:
-                double_push, double_pushes = pop_lsb(attacks)
-                if not get_bit(board.occupied, double_push) and not get_bit(
-                    board.occupied, double_push + 8
-                ):
-                    moves.append(encode_move(double_push))
+                target, double_pushes = pop_lsb(double_pushes)
+
+                moves.append(encode_move(square, target))
 
         while knights:
             square, knights = pop_lsb(knights)
             attacks = knight_attacks(square)
 
+            attacks &= ~board.black_occ
+
             while attacks:
-                attack, attacks = pop_lsb(attacks)
-                if not get_bit(board.black_occ):
-                    moves.append(encode_move(attacks))
+                target, attacks = pop_lsb(attacks)
+                moves.append(encode_move(square, target))
 
         while bishops:
             square, bishops = pop_lsb(bishops)
             attacks = bishop_attacks(square, board.occupied)
 
+            attacks &= ~board.black_occ
+
             while attacks:
-                attack, attacks = pop_lsb(attacks)
-                if not get_bit(board.black_occ):
-                    moves.append(encode_move(attacks))
+                target, attacks = pop_lsb(attacks)
+                moves.append(encode_move(square, target))
 
         while rooks:
             square, rooks = pop_lsb(rooks)
             attacks = rook_attacks(square, board.occupied)
 
+            attacks &= ~board.black_occ
+
             while attacks:
-                attack, attacks = pop_lsb(attacks)
-                if not get_bit(board.black_occ):
-                    moves.append(encode_move(attacks))
+                target, attacks = pop_lsb(attacks)
+                moves.append(encode_move(square, target))
 
         while queens:
             square, queens = pop_lsb(queens)
             attacks = queen_attacks(square, board.occupied)
 
-            while attacks:
-                attack, attacks = pop_lsb(attacks)
-                if not get_bit(board.black_occ):
-                    moves.append(encode_move(attacks))
+            attacks &= ~board.black_occ
 
-        return moves
+            while attacks:
+                target, attacks = pop_lsb(attacks)
+                moves.append(encode_move(square, target))
+
+        for move in moves:
+
+            undo = make_move(move, board)
+
+            king_square = board.bitboards[BLACK_KING].bit_length() - 1
+
+            if not is_square_attacked(king_square, WHITE, board):
+                legal_moves.append(move)
+
+            undo_move(undo, board)
+
+    return legal_moves
