@@ -1,52 +1,3 @@
-def perft(board, depth):
-    if depth == 0:
-        return 1
-
-    nodes = 0
-
-    encode_moves = board.generate_moves()
-
-    for move in encode_moves:
-        undo = board.make_move(move)[0]
-        nodes += perft(board, depth - 1)
-        board.undo_move(undo)
-
-    return nodes
-
-
-def divide(board, depth):
-    total_nodes = 0
-
-    encode_moves = board.generate_moves()
-
-    for move in encode_moves:
-        undo = board.make_move(move)[0]
-
-        nodes = perft(board, depth - 1)
-
-        board.undo_move(undo)
-
-        # print(f"{move_to_uci(move)}: {nodes}")
-
-        total_nodes += nodes
-
-    print("-" * 30)
-    print(f"Total: {total_nodes}")
-
-    return total_nodes
-
-
-def speedtest(total_time, moves):
-    if moves == 25:
-        print("-----------------")
-        print(
-            f"Average time spent per move in first 25 moves: {total_time / moves:.4f} seconds"
-        )
-    else:
-        print("-----------------")
-        print(f"Average time spent per move: {total_time / moves:.4f} seconds")
-
-
 def effective_branching_factor(nodes, depth):
     low, high = 1.0, 50.0
 
@@ -65,8 +16,36 @@ def effective_branching_factor(nodes, depth):
     return (low + high) / 2
 
 
-def pop_lsb(piece):
-    lsb = piece & -piece
+def pop_lsb(piece_bb):
+    lsb = piece_bb & -piece_bb
     square = lsb.bit_length() - 1
-    piece &= piece - 1
-    return square, piece  # remaining pieces
+    piece_bb &= piece_bb - 1
+    return square, piece_bb  # remaining pieces
+
+
+def inside_board(rank, file):
+    return 0 <= rank <= 7 and 0 <= file <= 7
+
+
+def get_bit(occupied, square):  # returns truthy if there is a piece on that square
+    return occupied & 1 << square
+
+
+def encode_move(
+    from_sq,
+    to_sq,
+    flag=0,
+):
+    move = from_sq
+    move |= to_sq << 6
+    move |= flag << 12
+
+    return move
+
+
+def decode_move(move):
+    from_sq = move & 0x3F
+    to_sq = move >> 6 & 0x3F
+    flag = move >> 12
+
+    return from_sq, to_sq, flag
