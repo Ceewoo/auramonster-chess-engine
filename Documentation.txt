@@ -1,0 +1,360 @@
+Engine:
+    Self playing speed:
+        v1:
+            0.1-0.7s, avg 0.4-0.5s at depth 3
+        v1.1:
+            no info
+        v1.2:
+            Eyeball averages:
+                0.1-0.3s at depth 3
+                0.7-2.3s at depth 4
+            Notice:
+                Calculated times for v3 were recorded with many aspects of v4 implemented:
+                    Everything except iterative deepening
+            Calculated averages:
+                At depth 3:
+                    First 34 moves: 0.1329s
+                    Full game: 0.0835 (108 halfmoves)
+                At depth 4:
+                    First 34 moves: 1.3637s
+                    Full game: 1.2791s (42 halfmoves)
+        v1.3:
+            Eyeball averages:
+                0.07-0.2s depth 3
+                0.7-1.9s at depth 4
+            Calculated averages:
+                At depth 3:
+                    First 34 moves: 0.1398s
+                    Full game: 0.0884 (108 halfmoves)
+                At depth 4:
+                    First 34 moves: 1.1714s
+                    Full game: 1.1149s (42 halfmoves)
+        v1.4:
+            Calculated averages:
+                At depth 3:
+                    First 34 moves: 0.1059s
+                    Full game: 0.0923s (124 halfmoves)
+                At depth 4:
+                    First 34 moves: 0.3797s
+                    Full game: 0.1895s (133 halfmoves)
+                At depth 5:
+                    First 34 moves: 3.5176s
+                    Full game: 2.8871s (95 halfmoves)
+        v1.5:
+            Calculated averages:
+                At depth 3:
+                    First 34 moves: 0.0467s
+                    Full game: 0.0420s (111 halfmoves)
+                At depth 4:
+                    First 34 moves: 0.1303s
+                    Full game: 0.0789s (133 halfmoves)
+                At depth 5:
+                    First 34 moves: 1.3854s
+                    Full game: 1.5815s (43 halfmoves)
+
+    Playing strength vs stockfish:
+        v1:
+            Not tested
+        v1.1:
+            Stockfish strength: 1320 Elo
+            100 games vs Stockfish at depth 3:
+                Wins: roughly 15
+                Draws: roughly 10
+                Losses: roughly 75
+                Exact results not documented
+        v1.2:
+            Stockfish strength: 1320 Elo
+            30 games vs Stockfish at depth 3:
+                Wins: roughly 15
+                Draws: roughly 15
+                Losses: roughly 5
+                Exact results not documented
+                Small sample size, results are to be judged cautiously
+        v1.3:
+            Stockfish strength: 1320 Elo
+            100 games vs Stockfish at depth 3:
+                Wins: 46
+                Draws: 29
+                Losses: 25
+            150 games vs stockfish at depth 4:
+                Wins: 109
+                Draws: 20
+                Losses: 21
+            25 games vs stockfish at depth 5:
+                Wins: 22
+                Draws: 1
+                Losses: 2
+        v1.4:
+            Stockfish strength: 1320 Elo
+            100 games vs Stockfish at depth 3:
+                Wins: 50
+                Draws: 23
+                Losses: 27
+            100 games vs stockfish at depth 4:
+                Wins: 72
+                Draws: 11
+                Losses: 17
+            15 games vs stockfish at depth 5:
+                Wins: 10
+                Draws: 4
+                Losses: 1
+        v1.5:
+            Identical playing strength to version 5
+
+    Piece values:
+        Pawn:
+            Middlegame: 82
+            Endgame: 94
+        Knight:
+            Middlegame: 337
+            Endgame: 281
+        Bishop:
+            Middlegame: 365
+            Endgame: 297
+        Rook:
+            Middlegame: 477
+            Endgame: 512
+        Queen:
+            Middlegame: 1025
+            Endgame: 936
+
+Chess
+    Perft speeds:
+        v1.4:
+            Starting position:
+                Depth: 1 took 0.0003 seconds
+                Nodes: 20
+                NPS: 66666
+                --------------
+                Depth: 2 took 0.0045 seconds
+                Nodes: 400
+                NPS: 88888
+                --------------
+                Depth: 3 took 0.1043 seconds
+                Nodes: 8902
+                NPS: 85349
+                --------------
+                Depth: 4 took 2.2556 seconds
+                Nodes: 197281
+                NPS: 87462
+            
+            Promotion test:
+                Depth: 1 took 0.0002 seconds
+                Nodes: 7
+                NPS: 35000
+                --------------
+                Depth: 2 took 0.0025 seconds
+                Nodes: 168
+                NPS: 67200
+                --------------
+                Depth: 3 took 0.0566 seconds
+                Nodes: 3656
+                NPS: 64593
+                --------------
+                Depth: 4 took 1.1047 seconds
+                Nodes: 68467
+                NPS: 61977
+                --------------
+                Depth: 5 took 21.0559 seconds
+                Nodes: 1347652
+                NPS: 64003
+            
+            Kiwipete:
+                Depth: 1 took 0.0006 seconds
+                Nodes: 48
+                NPS: 80000
+                --------------
+                Depth: 2 took 0.0255 seconds
+                Nodes: 2039
+                NPS: 79960
+                --------------
+                Depth: 3 took 1.1058 seconds
+                Nodes: 97862
+                NPS: 88498
+                --------------
+                Depth: 4 took 45.7458 seconds
+                Nodes: 4085603
+                NPS: 89310
+        v1.5:
+            Starting position:
+                Depth: 1 took 0.0001 seconds
+                Nodes: 20
+                NPS: 200000
+                --------------
+                Depth: 2 took 0.0017 seconds
+                Nodes: 400
+                NPS: 235294
+                --------------
+                Depth: 3 took 0.0376 seconds
+                Nodes: 8902
+                NPS: 236755
+                --------------
+                Depth: 4 took 0.8027 seconds
+                Nodes: 197281
+                NPS: 245771
+                --------------
+                Depth: 5 took 19.3670 seconds
+                Nodes: 4865609
+                NPS: 251231
+
+            Promotion test:
+                Depth: 1 took 0.0002 seconds
+                Nodes: 7
+                NPS: 35000
+                --------------
+                Depth: 2 took 0.0013 seconds
+                Nodes: 168
+                NPS: 129230
+                --------------
+                Depth: 3 took 0.0432 seconds
+                Nodes: 3656
+                NPS: 84629
+                --------------
+                Depth: 4 took 0.5196 seconds
+                Nodes: 68467
+                NPS: 131768
+                --------------
+                Depth: 5 took 10.0935 seconds
+                Nodes: 1347652
+                NPS: 133516
+
+            Kiwipete:
+                Depth: 1 took 0.0003 seconds
+                Nodes: 48
+                NPS: 160000
+                --------------
+                Depth: 2 took 0.0087 seconds
+                Nodes: 2039
+                NPS: 234367
+                --------------
+                Depth: 3 took 0.3813 seconds
+                Nodes: 97862
+                NPS: 256653
+                --------------
+                Depth: 4 took 16.5889 seconds
+                Nodes: 4085603
+                NPS: 246285
+
+    cProfiles:
+        v1.4:
+            test_perft(1, 4) of starting position
+                tottime     cumtime   filename:lineno(function)
+                        6.410     test.py:65(test_perft)
+                0.213        6.409     basefunctions.py:64(perft)
+                0.269        5.062     chess.py:64(generate_moves)
+                0.186        4.050     chess.py:760(legal_move)
+                1.727        2.644     chess.py:617(in_check)
+                0.900        1.977     chess.py:170(make_move)
+                0.115        1.555     chess.py:769(pawn_push)
+                0.055        1.379     chess.py:894(pawn_double_push)
+                0.939        0.939     basefunctions.py:37(inside_board)
+                0.086        0.885     chess.py:1082(legal_knight_move_gen)
+                0.538        0.802     zobrist.py:52(update_hash)
+                0.312        0.377     chess.py:364(undo_move)
+                0.045        0.307     chess.py:1139(legal_bishop_move_gen)
+                0.035        0.200     chess.py:1321(legal_queen_move_gen)
+                0.199        0.199     {method 'startswith' of 'str' objects}
+                0.198        0.198     {method 'get' of 'dict' objects}
+                0.151        0.151     {method 'append' of 'list' objects}
+                0.033        0.134     chess.py:1230(legal_rook_move_gen)
+                0.074        0.113     chess.py:925(pawn_captures)
+                0.027        0.105     chess.py:1411(legal_king_move_gen)
+                0.086        0.086     basefunctions.py:4(convert)
+                0.072        0.072     basefunctions.py:14(convert_reverse)
+                0.070        0.070     {method 'endswith' of 'str' objects}
+                0.048        0.048     {method 'extend' of 'list' objects}
+                0.021        0.032     chess.py:1480(castling)
+        v1.5:
+            test_perft(1, 4) of starting position
+                tottime    cumtime   filename:lineno(function)
+                0.000        2.443     test.py:65(test_perft)
+                0.206        2.442     basefunctions.py:64(perft)
+                0.246        1.093     chess.py:66(generate_moves)
+                0.452        0.973     chess.py:164(make_move)
+                0.260        0.385     zobrist.py:52(update_hash)
+                0.157        0.188     chess.py:358(undo_move)
+                0.096        0.142     chess.py:718(check_info)
+                0.130        0.130     basefunctions.py:37(inside_board)
+                0.073        0.109     chess.py:1330(knight_moves)
+                0.029        0.108     chess.py:2091(king_moves)
+                0.098        0.098     {method 'startswith' of 'str' objects}
+                0.097        0.097     {method 'get' of 'dict' objects}
+                0.089        0.089     {method 'append' of 'list' objects}
+                0.066        0.083     chess.py:1140(pawn_captures)
+                0.059        0.080     chess.py:963(pawn_push)
+                0.056        0.075     chess.py:1089(pawn_double_push)
+                0.003        0.066     chess.py:954(legal_move)
+                0.038        0.054     chess.py:1385(bishop_moves)
+                0.052        0.052     {built-in method builtins.len}
+                0.051        0.051     {method 'extend' of 'list' objects}
+                0.032        0.047     chess.py:1623(rook_moves)
+                0.030        0.044     chess.py:593(in_check)
+                0.030        0.044     chess.py:1860(queen_moves)
+                0.034        0.034     {method 'endswith' of 'str' objects}
+                0.030        0.030     basefunctions.py:14(convert_reverse)
+                0.017        0.028     chess.py:2232(castling)
+            test_perft(1, 5) of starting position
+                tottime      cumtime   filename:lineno(function)
+                0.000        58.079    test.py:65(test_perft)
+                4.846        58.078    basefunctions.py:64(perft)
+                5.319        25.413    chess.py:66(generate_moves)
+                11.571       24.233    chess.py:164(make_move)
+                5.972        8.838     zobrist.py:52(update_hash)
+                3.676        4.422     chess.py:358(undo_move)
+                0.695        3.888     chess.py:2091(king_moves)
+                3.275        3.275     basefunctions.py:37(inside_board)
+                2.002        3.013     chess.py:718(check_info)
+                2.907        2.907     {method 'startswith' of 'str' objects}
+                0.136        2.889     chess.py:954(legal_move)
+                1.568        2.383     chess.py:1330(knight_moves)
+                2.330        2.330     {method 'get' of 'dict' objects}
+                2.090        2.090     {method 'append' of 'list' objects}
+                1.284        1.918     chess.py:593(in_check)
+                1.418        1.784     chess.py:1140(pawn_captures)
+                1.241        1.681     chess.py:963(pawn_push)
+                1.121        1.505     chess.py:1089(pawn_double_push)
+                0.960        1.396     chess.py:1385(bishop_moves)
+                1.130        1.130     {method 'extend' of 'list' objects}
+                0.743        1.114     chess.py:1860(queen_moves)
+                0.727        1.089     chess.py:1623(rook_moves)
+                1.088        1.088     {built-in method builtins.len}
+                0.808        0.808     {method 'endswith' of 'str' objects}
+                0.590        0.590     basefunctions.py:14(convert_reverse)
+                0.364        0.581     chess.py:2232(castling)
+
+
+Version changelogs:
+    v1:
+        Implemented basic searching and evaluation based on arbitrary piece values
+    v1.1:
+        Implemented alpha-beta pruning to searching algorithm
+        Added draw by 50-move rule
+    v1.2:
+        Added piece-square tables and piece values from PeSTO
+        Added move ordering of alpha-beta search by transposition table
+    v1.3:
+        Improved move ordering of alpha-beta search based on move information:
+            Captures
+            Promotions
+        Reworked transposition table implementation to accommodate iterative deepening
+        Implemented iterative deepening
+    v1.4:
+        Implemented draw by threefold repetition
+        implemented draw by insufficient material
+        Improved move ordering
+            Added killer moves
+            Added history heuristics
+    v1.5:
+        Drastically improved speed of move generation
+            Move testing now tests full legality as move is being made instead
+            of generating all pseudo legal moves into a list and afterwards
+            iterating through the list
+
+            Decreased amount of legality checking requiring making and
+            undoing moves
+
+            Improved efficiency of move generation functions through minimizing
+            unnecessary function calls
+        
+Upcoming versions:
+    v2: Completely rebuilt architecture
