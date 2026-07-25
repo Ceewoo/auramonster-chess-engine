@@ -3,15 +3,19 @@ from constants import (
     KING_OFFSETS,
     WHITE_PAWN_CAPTURE_OFFSETS,
     BLACK_PAWN_CAPTURE_OFFSETS,
-    white,
-    black,
+    WHITE,
+    BLACK,
+    DIAGONAL_DIRS,
+    ORTHOGONAL_DIRS,
 )
+
+from basefunctions import inside_board, get_bit
 
 _KNIGHT_ATTACKS = [0] * 64
 _KING_ATTACKS = [0] * 64
+_PAWN_ATTACKS = [[0] * 64 for _ in range(2)]
 _PAWN_PUSH = [[0] * 64 for _ in range(2)]
 _PAWN_DOUBLE_PUSH = [[0] * 64 for _ in range(2)]
-_PAWN_ATTACKS = [[0] * 64 for _ in range(2)]
 
 
 def init_tables():
@@ -33,7 +37,7 @@ def init_knight_attacks():
             new_rank = rank + dr
             new_file = file + df
 
-            if 0 <= new_rank <= 7 and 0 <= new_file <= 7:
+            if inside_board(new_rank, new_file):
                 target = new_rank * 8 + new_file
 
                 attacks |= 1 << target
@@ -52,7 +56,7 @@ def init_king_attacks():
             new_rank = rank + dr
             new_file = file + df
 
-            if 0 <= new_rank <= 7 and 0 <= new_file <= 7:
+            if inside_board(new_rank, new_file):
                 target = new_rank * 8 + new_file
 
                 attacks |= 1 << target
@@ -71,15 +75,13 @@ def init_pawn_attacks():
             new_rank = rank + dr
             new_file = file + df
 
-            if 0 <= new_rank <= 7 and 0 <= new_file <= 7:
-                if dr == -2:
-                    if rank != 1:
-                        continue
+            if inside_board(new_rank, new_file):
+
                 target = new_rank * 8 + new_file
 
                 attacks |= 1 << target
 
-        _PAWN_ATTACKS[white][square] = attacks
+        _PAWN_ATTACKS[WHITE][square] = attacks
 
     for square in range(64):
         rank = square // 8
@@ -91,15 +93,13 @@ def init_pawn_attacks():
             new_rank = rank + dr
             new_file = file + df
 
-            if 0 <= new_rank <= 7 and 0 <= new_file <= 7:
-                if dr == 2:
-                    if rank != 6:
-                        continue
+            if inside_board(new_rank, new_file):
+
                 target = new_rank * 8 + new_file
 
                 attacks |= 1 << target
 
-        _PAWN_ATTACKS[black][square] = attacks
+        _PAWN_ATTACKS[BLACK][square] = attacks
 
 
 def init_pawn_pushes():
@@ -110,12 +110,12 @@ def init_pawn_pushes():
 
         attacks = 0
 
-        if 0 <= new_rank <= 7 and 0 <= new_file <= 7:
+        if inside_board(new_rank, new_file):
             target = new_rank * 8 + new_file
 
             attacks |= 1 << target
 
-        _PAWN_PUSH[white][square] = attacks
+        _PAWN_PUSH[WHITE][square] = attacks
 
     for square in range(64):
         new_rank = square // 8 - 1
@@ -123,12 +123,12 @@ def init_pawn_pushes():
 
         attacks = 0
 
-        if 0 <= new_rank <= 7 and 0 <= new_file <= 7:
+        if inside_board(new_rank, new_file):
             target = new_rank * 8 + new_file
 
             attacks |= 1 << target
 
-        _PAWN_PUSH[black][square] = attacks
+        _PAWN_PUSH[BLACK][square] = attacks
 
 
 def init_pawn_double_pushes():
@@ -144,7 +144,7 @@ def init_pawn_double_pushes():
 
             attacks |= 1 << target
 
-        _PAWN_DOUBLE_PUSH[white][square] = attacks
+        _PAWN_DOUBLE_PUSH[WHITE][square] = attacks
 
     for square in range(64):
         new_rank = square // 8 - 2
@@ -157,7 +157,7 @@ def init_pawn_double_pushes():
 
             attacks |= 1 << target
 
-        _PAWN_DOUBLE_PUSH[black][square] = attacks
+        _PAWN_DOUBLE_PUSH[BLACK][square] = attacks
 
 
 def knight_attacks(square):
@@ -169,20 +169,69 @@ def king_attacks(square):
 
 
 def pawn_attacks(square, color):
-    return _PAWN_ATTACKS[square][color]
+    return _PAWN_ATTACKS[color][square]
 
 
 def bishop_attacks(square, occupied):
-    return
+    rank = square // 8
+    file = square % 8
+
+    attacks = 0
+
+    for dr, df in DIAGONAL_DIRS:
+
+        new_rank = rank + dr
+        new_file = file + df
+
+        while inside_board(new_rank, new_file):
+
+            target = new_rank * 8 + new_file
+
+            attacks |= 1 << target
+
+            if get_bit(occupied, target):
+                break
+
+            new_rank += dr
+            new_file += df
+
+    return attacks
 
 
 def rook_attacks(square, occupied):
-    return
+
+    rank = square // 8
+    file = square % 8
+
+    attacks = 0
+
+    for dr, df in ORTHOGONAL_DIRS:
+
+        new_rank = rank + dr
+        new_file = file + df
+
+        while inside_board(new_rank, new_file):
+
+            target = new_rank * 8 + new_file
+
+            attacks |= 1 << target
+
+            if get_bit(occupied, target):
+                break
+
+            new_rank += dr
+            new_file += df
+
+    return attacks
 
 
 def queen_attacks(square, occupied):
-    return
+    return bishop_attacks(square, occupied) | rook_attacks(square, occupied)
 
 
-# 36 = knight square
-#
+def pawn_pushes(square, color):  # not an attack
+    return _PAWN_PUSH[color][square]
+
+
+def pawn_double_pushes(square, color):  # not an attack
+    return _PAWN_DOUBLE_PUSH[color][square]
