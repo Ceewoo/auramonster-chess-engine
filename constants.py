@@ -1,21 +1,21 @@
-white = 0
-black = 1
+WHITE = 0
+BLACK = 1
 
-white_pawn = 0
-white_knight = 1
-white_bishop = 2
-white_rook = 3
-white_queen = 4
-white_king = 5
+WHITE_PAWN = 0
+WHITE_KNIGHT = 1
+WHITE_BISHOP = 2
+WHITE_ROOK = 3
+WHITE_QUEEN = 4
+WHITE_KING = 5
 
-black_pawn = 6
-black_knight = 7
-black_bishop = 8
-black_rook = 9
-black_queen = 10
-black_king = 11
+BLACK_PAWN = 6
+BLACK_KNIGHT = 7
+BLACK_BISHOP = 8
+BLACK_ROOK = 9
+BLACK_QUEEN = 10
+BLACK_KING = 11
 
-empty = -1
+EMPTY = -1
 
 pieces = {
     0: "P",
@@ -55,11 +55,19 @@ KING_OFFSETS = [
 ]
 
 WHITE_PAWN_CAPTURE_OFFSETS = [
+    (1, -1),
+    (1, 1),
+]
+
+BLACK_PAWN_CAPTURE_OFFSETS = [
     (-1, -1),
     (-1, 1),
 ]
 
-BLACK_PAWN_CAPTURE_OFFSETS = [
-    (1, -1),
-    (1, 1),
-]
+DIAGONAL_DIRS = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+
+ORTHOGONAL_DIRS = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+
+FILES = ["a", "b", "c", "d", "e", "f", "g", "h"]
+
+REVERSE_FILES = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
