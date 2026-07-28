@@ -17,7 +17,11 @@ class Board:
         self.castling = WK | WQ | BK | BQ
         self.en_passant = -1
 
-        self.initialize_board()
+        self.halfmove_clock = 0
+
+        FEN = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
+
+        self.initialize_board(FEN)
 
     def initialize_board(self, fen=None):
         if not fen:
@@ -35,7 +39,7 @@ class Board:
             self.bitboards[BLACK_QUEEN] = 0x0800000000000000
             self.bitboards[BLACK_KING] = 0x1000000000000000
         else:
-            pass
+            self.load_fen(fen)
 
         for piece in range(12):
             bb = self.bitboards[piece]
@@ -67,3 +71,36 @@ class Board:
 
     def update_bitboard(self):
         return
+
+    def load_fen(self, fen):
+        board, side, castling, en_passant, halfmove, fullmove = fen.split()
+        rows = board.split("/")
+        for row, fen_row in enumerate(rows):
+            col = 0
+            for char in fen_row:
+                if char in "PNBRQKpnbrqk":
+                    square = (7 - row) * 8 + col
+                    self.bitboards[FEN_PIECES[char]] |= 1 << square
+                    col += 1
+                else:
+                    col += int(char)
+
+        if side == "w":
+            self.side_to_move = WHITE
+        else:
+            self.side_to_move = BLACK
+
+        if "K" not in castling:
+            self.castling |= WK
+        if "Q" not in castling:
+            self.castling |= WQ
+        if "k" not in castling:
+            self.castling |= BK
+        if "q" not in castling:
+            self.castling |= BQ
+
+        if en_passant != "-":
+            ep_square = REVERSE_FILES[en_passant[0]] + int(en_passant[1]) * 8
+            self.en_passant = ep_square
+
+        self.halfmove_clock = halfmove

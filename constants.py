@@ -64,6 +64,23 @@ pieces = {
     11: "k",
 }
 
+# Convert pieces from FEN
+
+FEN_PIECES = {
+    "P": WHITE_PAWN,
+    "N": WHITE_KNIGHT,
+    "B": WHITE_BISHOP,
+    "R": WHITE_ROOK,
+    "Q": WHITE_QUEEN,
+    "K": WHITE_KING,
+    "p": BLACK_PAWN,
+    "n": BLACK_KNIGHT,
+    "b": BLACK_BISHOP,
+    "r": BLACK_ROOK,
+    "q": BLACK_QUEEN,
+    "k": BLACK_KING,
+}
+
 # Piece movement
 
 KNIGHT_OFFSETS = [
