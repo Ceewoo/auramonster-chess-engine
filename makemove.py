@@ -11,32 +11,40 @@ def make_move(encoded_move, board):
     from_bb = 1 << from_sq
     to_bb = 1 << to_sq
 
-    if flag == EN_PASSANT:
-        captured_sq = to_sq - 8 if side_to_move == WHITE else to_sq + 8
-        captured = board.pieces[captured_sq]
-    else:
-        captured = board.pieces[to_sq]
+    if side_to_move == WHITE:
 
-    undo = [
-        from_sq,
-        to_sq,
-        flag,
+        if flag == EN_PASSANT:
+            captured = board.pieces[to_sq - 8]
+            board.bitboards[captured] ^= to_bb << 8
+        else:
+            captured = board.pieces[to_sq]
+            if captured != EMPTY:
+                board.bitboards[captured] ^= to_bb
+
+        if flag >= PROMOTE_N:
+            promoted_piece = {
+                PROMOTE_N: WHITE_KNIGHT,
+                PROMOTE_B: WHITE_BISHOP,
+                PROMOTE_R: WHITE_ROOK,
+                PROMOTE_Q: WHITE_QUEEN,
+            }[flag]
+
+    undo = (
         piece,
         captured,
-        from_bb,
-        to_bb,
-        side_to_move,
         board.white_occ,
         board.black_occ,
-        board.occupied,
-    ]
+    )
 
     board.pieces[from_sq] = EMPTY
     board.pieces[to_sq] = piece
 
     if captured != EMPTY:
         if side_to_move == WHITE:
-            board.black_occ &= ~to_bb
+            if flag == EN_PASSANT:
+                board.black_occ &= ~captured_sq
+            else:
+                board.black_occ &= ~to_bb
         else:
             board.white_occ &= ~to_bb
         board.bitboards[captured] ^= to_bb
@@ -58,22 +66,29 @@ def make_move(encoded_move, board):
     return undo
 
 
-def undo_move(undo, board):
+def undo_move(encoded_move, undo, board):
 
-    from_sq = undo[0]
-    to_sq = undo[1]
-    flag = undo[2]
-    piece = undo[3]
-    captured = undo[4]
-    from_bb = undo[5]
-    to_bb = undo[6]
-    side_to_move = undo[7]
-    white_occ = undo[8]
-    black_occ = undo[9]
-    occupied = undo[10]
+    from_sq, to_sq, flag = decode_move(encoded_move)
+
+    piece, captured, white_occ, black_occ = undo
+
+    from_bb = 1 << from_sq
+    to_bb = 1 << to_sq
+    occupied = white_occ | black_occ
+
+    if board.side_to_move == WHITE:
+        side_to_move = BLACK
+    else:
+        side_to_move = WHITE
 
     board.pieces[from_sq] = piece
-    board.pieces[to_sq] = captured
+    if flag == EN_PASSANT:
+        if side_to_move == WHITE:
+            board.pieces[to_sq - 8] = captured
+        else:
+            board.pieces[to_sq + 8] = captured
+    else:
+        board.pieces[to_sq] = captured
 
     if captured != EMPTY:
         board.bitboards[captured] ^= to_bb
