@@ -7,10 +7,15 @@ def make_move(encoded_move, board):
     from_sq, to_sq, flag = decode_move(encoded_move)
 
     piece = board.pieces[from_sq]
-    captured = board.pieces[to_sq]
+    side_to_move = board.side_to_move
     from_bb = 1 << from_sq
     to_bb = 1 << to_sq
-    side_to_move = board.side_to_move
+
+    if flag == EN_PASSANT:
+        captured_sq = to_sq - 8 if side_to_move == WHITE else to_sq + 8
+        captured = board.pieces[captured_sq]
+    else:
+        captured = board.pieces[to_sq]
 
     undo = [
         from_sq,
