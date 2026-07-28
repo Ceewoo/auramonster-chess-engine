@@ -1,3 +1,5 @@
+# piece values
+
 WHITE = 0
 BLACK = 1
 
@@ -17,6 +19,30 @@ BLACK_KING = 11
 
 EMPTY = -1
 
+# Move representation flags (bit 12-15)
+
+QUIET = 0
+
+DOUBLE_PAWN_PUSH = 1
+
+KING_CASTLE = 2
+QUEEN_CASTLE = 3
+
+CAPTURE = 4
+EN_PASSANT = 5
+
+PROMOTE_N = 6
+PROMOTE_B = 7
+PROMOTE_R = 8
+PROMOTE_Q = 9
+
+CAPTURE_PROMOTE_N = 12
+CAPTURE_PROMOTE_B = 13
+CAPTURE_PROMOTE_R = 14
+CAPTURE_PROMOTE_Q = 15
+
+# Pieces in printed board
+
 pieces = {
     0: "P",
     1: "N",
@@ -31,6 +57,8 @@ pieces = {
     10: "q",
     11: "k",
 }
+
+# Piece movement
 
 KNIGHT_OFFSETS = [
     (2, 1),
@@ -67,6 +95,8 @@ BLACK_PAWN_CAPTURE_OFFSETS = [
 DIAGONAL_DIRS = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
 
 ORTHOGONAL_DIRS = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+
+# Conversions used for uci conversion
 
 FILES = ["a", "b", "c", "d", "e", "f", "g", "h"]
 
