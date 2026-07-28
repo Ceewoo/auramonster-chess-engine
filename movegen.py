@@ -2,7 +2,7 @@ from attacks import *
 from constants import *
 from basefunctions import pop_lsb, encode_move
 from makemove import make_move, undo_move
-from legal import is_square_attacked
+from legal import square_attacked
 
 
 def generate_moves(board):
@@ -26,22 +26,22 @@ def generate_moves(board):
         attacks &= ~board.white_occ
 
         if board.castling & WK:
-            if not (board.occupied & ((1 << 62) | (1 << 61))):
+            if not (board.occupied & ((1 << 5) | (1 << 6))):
                 if (
-                    not is_square_attacked(60, BLACK, board)
-                    and not is_square_attacked(61, BLACK, board)
-                    and not is_square_attacked(62, BLACK, board)
+                    not square_attacked(4, BLACK, board)
+                    and not square_attacked(5, BLACK, board)
+                    and not square_attacked(6, BLACK, board)
                 ):
-                    legal_moves.append(encode_move(60, 62, KING_CASTLE))
+                    legal_moves.append(encode_move(4, 6, KING_CASTLE))
 
         if board.castling & WQ:
-            if not (board.occupied & ((1 << 59) | (1 << 58) | (1 << 57))):
+            if not (board.occupied & ((1 << 3) | (1 << 2) | (1 << 1))):
                 if (
-                    not is_square_attacked(60, BLACK, board)
-                    and not is_square_attacked(59, BLACK, board)
-                    and not is_square_attacked(58, BLACK, board)
+                    not square_attacked(4, BLACK, board)
+                    and not square_attacked(3, BLACK, board)
+                    and not square_attacked(2, BLACK, board)
                 ):
-                    legal_moves.append(encode_move(60, 58, QUEEN_CASTLE))
+                    legal_moves.append(encode_move(4, 2, QUEEN_CASTLE))
 
         while attacks:
             target, attacks = pop_lsb(attacks)
@@ -134,7 +134,7 @@ def generate_moves(board):
 
             king_square = board.bitboards[WHITE_KING].bit_length() - 1
 
-            if not is_square_attacked(king_square, BLACK, board):
+            if not square_attacked(king_square, BLACK, board):
                 legal_moves.append(move)
 
             undo_move(move, undo1, undo2, board)
@@ -153,22 +153,22 @@ def generate_moves(board):
         attacks &= ~board.black_occ
 
         if board.castling & BK:
-            if not (board.occupied & ((1 << 5) | (1 << 6))):
+            if not (board.occupied & ((1 << 62) | (1 << 61))):
                 if (
-                    not is_square_attacked(4, WHITE, board)
-                    and not is_square_attacked(5, WHITE, board)
-                    and not is_square_attacked(6, WHITE, board)
+                    not square_attacked(60, WHITE, board)
+                    and not square_attacked(61, WHITE, board)
+                    and not square_attacked(62, WHITE, board)
                 ):
-                    legal_moves.append(encode_move(4, 6, KING_CASTLE))
+                    legal_moves.append(encode_move(60, 62, KING_CASTLE))
 
         if board.castling & BQ:
-            if not (board.occupied & ((1 << 3) | (1 << 2) | (1 << 1))):
+            if not (board.occupied & ((1 << 59) | (1 << 58) | (1 << 57))):
                 if (
-                    not is_square_attacked(4, WHITE, board)
-                    and not is_square_attacked(3, WHITE, board)
-                    and not is_square_attacked(2, WHITE, board)
+                    not square_attacked(60, WHITE, board)
+                    and not square_attacked(59, WHITE, board)
+                    and not square_attacked(58, WHITE, board)
                 ):
-                    legal_moves.append(encode_move(4, 2, QUEEN_CASTLE))
+                    legal_moves.append(encode_move(60, 58, QUEEN_CASTLE))
 
         while attacks:
             target, attacks = pop_lsb(attacks)
@@ -245,7 +245,7 @@ def generate_moves(board):
 
             king_square = board.bitboards[BLACK_KING].bit_length() - 1
 
-            if not is_square_attacked(king_square, WHITE, board):
+            if not square_attacked(king_square, WHITE, board):
                 legal_moves.append(move)
 
             undo_move(move, undo1, undo2, board)

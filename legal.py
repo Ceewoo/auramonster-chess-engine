@@ -3,7 +3,7 @@ from constants import *
 from basefunctions import pop_lsb
 
 
-def is_square_attacked(target_square, by_side, board):
+def square_attacked(target_square, by_side, board):
     # by_side means that is the color attacking
     target_bb = 1 << target_square
     occupied = board.occupied
