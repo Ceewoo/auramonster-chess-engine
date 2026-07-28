@@ -52,14 +52,17 @@ def generate_moves(board):
             attacks = pawn_attacks(square, side_to_move)
             pushes = pawn_pushes(square, side_to_move)
             double_pushes = pawn_double_pushes(square, side_to_move)
-            attacks &= board.black_occ
+            capture_targets = board.black_occ
+            if board.en_passant != -1:
+                capture_targets |= 1 << board.en_passant
+
+            attacks &= capture_targets
             pushes &= ~board.occupied
             double_pushes &= ~board.occupied
             double_pushes &= ~(board.occupied << 8)
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
-
                 if target >= 56:
                     moves.append(encode_move(square, target, PROMOTE_N))
                     moves.append(encode_move(square, target, PROMOTE_B))
@@ -179,25 +182,44 @@ def generate_moves(board):
             attacks = pawn_attacks(square, side_to_move)
             pushes = pawn_pushes(square, side_to_move)
             double_pushes = pawn_double_pushes(square, side_to_move)
-            attacks &= board.white_occ
+            capture_targets = board.white_occ
+            if board.en_passant != -1:
+                capture_targets |= 1 << board.en_passant
+
+            attacks &= capture_targets
             pushes &= ~board.occupied
             double_pushes &= ~board.occupied
             double_pushes &= ~(board.occupied >> 8)
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
+                if target <= 7:
+                    moves.append(encode_move(square, target, PROMOTE_N))
+                    moves.append(encode_move(square, target, PROMOTE_B))
+                    moves.append(encode_move(square, target, PROMOTE_R))
+                    moves.append(encode_move(square, target, PROMOTE_Q))
 
-                moves.append(encode_move(square, target))
+                elif board.en_passant == target:
+                    moves.append(encode_move(square, target, EN_PASSANT))
+
+                else:
+                    moves.append(encode_move(square, target))
 
             while pushes:
                 target, pushes = pop_lsb(pushes)
 
-                moves.append(encode_move(square, target))
+                if target <= 7:
+                    moves.append(encode_move(square, target, PROMOTE_N))
+                    moves.append(encode_move(square, target, PROMOTE_B))
+                    moves.append(encode_move(square, target, PROMOTE_R))
+                    moves.append(encode_move(square, target, PROMOTE_Q))
+                else:
+                    moves.append(encode_move(square, target))
 
             while double_pushes:
                 target, double_pushes = pop_lsb(double_pushes)
 
-                moves.append(encode_move(square, target))
+                moves.append(encode_move(square, target, DOUBLE_PAWN_PUSH))
 
         while knights:
             square, knights = pop_lsb(knights)
