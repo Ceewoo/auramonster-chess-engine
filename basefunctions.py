@@ -16,11 +16,10 @@ def effective_branching_factor(nodes, depth):
     return (low + high) / 2
 
 
-def pop_lsb(piece_bb):
-    lsb = piece_bb & -piece_bb
-    square = lsb.bit_length() - 1
-    piece_bb &= piece_bb - 1
-    return square, piece_bb  # remaining pieces
+def pop_lsb(bb):
+    square = (bb & -bb).bit_length() - 1
+    bb &= bb - 1
+    return square, bb  # remaining pieces
 
 
 def inside_board(rank, file):
