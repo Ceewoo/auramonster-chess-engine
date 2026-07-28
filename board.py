@@ -13,7 +13,8 @@ class Board:
         self.occupied = 0
 
         self.side_to_move = WHITE
-        self.castling = 1111
+
+        self.castling = WK | WQ | BK | BQ
         self.en_passant = -1
 
         self.initialize_board()

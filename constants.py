@@ -19,6 +19,18 @@ BLACK_KING = 11
 
 EMPTY = -1
 
+# castling rights:
+
+# bit 0: white kingside
+# bit 1: white queenside
+# bit 2: black kingside
+# bit 3: black queenside
+
+WK = 1 << 0  # 0001
+WQ = 1 << 1  # 0010
+BK = 1 << 2  # 0100
+BQ = 1 << 3  # 1000
+
 # Move representation flags (bit 12-15)
 
 QUIET = 0
