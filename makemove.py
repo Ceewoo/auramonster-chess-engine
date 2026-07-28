@@ -150,18 +150,74 @@ def undo_move(encoded_move, undo1, undo2, board):
         side_to_move = WHITE
 
     board.pieces[from_sq] = piece
-    if flag == EN_PASSANT:
-        if side_to_move == WHITE:
+
+    if side_to_move == WHITE:
+        if flag == EN_PASSANT:
             board.pieces[to_sq - 8] = captured
         else:
-            board.pieces[to_sq + 8] = captured
-    else:
-        board.pieces[to_sq] = captured
+            board.pieces[to_sq] = captured
 
-    if captured != EMPTY:
-        board.bitboards[captured] ^= to_bb
+        if captured != EMPTY:
+            if flag == EN_PASSANT:
+                board.bitboards[captured] ^= to_bb >> 8
+            else:
+                board.bitboards[captured] ^= to_bb
+
+        if flag == KING_CASTLE:
+            board.pieces[7] = WHITE_ROOK
+            board.pieces[5] = EMPTY
+            board.bitboards[WHITE_ROOK] ^= 1 << 7
+            board.bitboards[WHITE_ROOK] ^= 1 << 5
+
+        elif flag == QUEEN_CASTLE:
+            board.pieces[0] = WHITE_ROOK
+            board.pieces[3] = EMPTY
+            board.bitboards[WHITE_ROOK] ^= 1 << 0
+            board.bitboards[WHITE_ROOK] ^= 1 << 3
+
+        elif flag >= PROMOTE_N:
+            promoted_piece = {
+                PROMOTE_N: WHITE_KNIGHT,
+                PROMOTE_B: WHITE_BISHOP,
+                PROMOTE_R: WHITE_ROOK,
+                PROMOTE_Q: WHITE_QUEEN,
+            }[flag]
+
+    else:
+        if flag == EN_PASSANT:
+            board.pieces[to_sq + 8] = captured
+        else:
+            board.pieces[to_sq] = captured
+
+        if captured != EMPTY:
+            if flag == EN_PASSANT:
+                board.bitboards[captured] ^= to_bb << 8
+            else:
+                board.bitboards[captured] ^= to_bb
+
+        if flag == KING_CASTLE:
+            board.pieces[63] = BLACK_ROOK
+            board.pieces[61] = EMPTY
+            board.bitboards[BLACK_ROOK] ^= 1 << 63
+            board.bitboards[BLACK_ROOK] ^= 1 << 61
+
+        elif flag == QUEEN_CASTLE:
+            board.pieces[56] = BLACK_ROOK
+            board.pieces[59] = EMPTY
+            board.bitboards[BLACK_ROOK] ^= 1 << 56
+            board.bitboards[BLACK_ROOK] ^= 1 << 59
+
+        elif flag >= PROMOTE_N:
+            promoted_piece = {
+                PROMOTE_N: BLACK_KNIGHT,
+                PROMOTE_B: BLACK_BISHOP,
+                PROMOTE_R: BLACK_ROOK,
+                PROMOTE_Q: BLACK_QUEEN,
+            }[flag]
 
     board.bitboards[piece] ^= from_bb
+    if flag >= PROMOTE_N:
+        board.bitboards[promoted_piece] ^= to_bb
     board.bitboards[piece] ^= to_bb
 
     board.side_to_move = side_to_move
