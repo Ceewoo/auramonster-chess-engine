@@ -12,7 +12,7 @@ def make_move(encoded_move, board):
     to_bb = 1 << to_sq
     captured = EMPTY
 
-    undo1 = (piece, board.white_occ, board.black_occ, board.en_passant)
+    undo1 = (piece, board.white_occ, board.black_occ, board.en_passant, board.castling)
 
     if side_to_move == WHITE:
 
@@ -34,6 +34,8 @@ def make_move(encoded_move, board):
             board.white_occ ^= 1 << 5
             board.pieces[7] = EMPTY
             board.pieces[5] = WHITE_ROOK
+            board.castling &= ~WK
+            board.castling &= ~WQ
 
         elif flag == QUEEN_CASTLE:
             board.bitboards[WHITE_ROOK] ^= 1 << 0
@@ -42,6 +44,8 @@ def make_move(encoded_move, board):
             board.white_occ ^= 1 << 3
             board.pieces[0] = EMPTY
             board.pieces[3] = WHITE_ROOK
+            board.castling &= ~WK
+            board.castling &= ~WQ
 
         elif flag >= PROMOTE_N:
             promoted_piece = {
@@ -61,6 +65,20 @@ def make_move(encoded_move, board):
             if captured != EMPTY:
                 board.bitboards[captured] ^= to_bb
                 board.black_occ ^= to_bb
+                if captured == BLACK_ROOK:
+                    if to_sq == 0:
+                        board.castling &= ~BQ
+                    elif to_sq == 7:
+                        board.castling &= ~BK
+
+        if piece == WHITE_KING:
+            board.castling &= ~WK
+            board.castling &= ~WQ
+        elif piece == WHITE_ROOK:
+            if from_sq == 0:
+                board.castling &= ~WQ
+            elif from_sq == 7:
+                board.castling &= ~WK
 
         board.white_occ ^= from_bb
         board.white_occ ^= to_bb
@@ -86,6 +104,8 @@ def make_move(encoded_move, board):
             board.black_occ ^= 1 << 61
             board.pieces[63] = EMPTY
             board.pieces[61] = BLACK_ROOK
+            board.castling &= ~BK
+            board.castling &= ~BQ
 
         elif flag == QUEEN_CASTLE:
             board.bitboards[BLACK_ROOK] ^= 1 << 56
@@ -94,6 +114,8 @@ def make_move(encoded_move, board):
             board.black_occ ^= 1 << 59
             board.pieces[56] = EMPTY
             board.pieces[59] = BLACK_ROOK
+            board.castling &= ~BK
+            board.castling &= ~BQ
 
         elif flag >= PROMOTE_N:
             promoted_piece = {
@@ -107,12 +129,26 @@ def make_move(encoded_move, board):
             if captured != EMPTY:
                 board.bitboards[captured] ^= to_bb
                 board.white_occ ^= to_bb
+                if captured == WHITE_ROOK:
+                    if to_sq == 0:
+                        board.castling &= ~WQ
+                    elif to_sq == 7:
+                        board.castling &= ~WK
 
         else:
             captured = board.pieces[to_sq]
             if captured != EMPTY:
                 board.bitboards[captured] ^= to_bb
                 board.white_occ ^= to_bb
+
+        if piece == BLACK_KING:
+            board.castling &= ~BK
+            board.castling &= ~BQ
+        elif piece == BLACK_ROOK:
+            if from_sq == 56:
+                board.castling &= ~BQ
+            elif from_sq == 63:
+                board.castling &= ~BK
 
         board.black_occ ^= from_bb
         board.black_occ ^= to_bb
@@ -137,7 +173,7 @@ def undo_move(encoded_move, undo1, undo2, board):
 
     from_sq, to_sq, flag = decode_move(encoded_move)
 
-    piece, white_occ, black_occ, old_en_passant = undo1
+    piece, white_occ, black_occ, old_en_passant, old_castling = undo1
     captured = undo2
 
     from_bb = 1 << from_sq
@@ -229,3 +265,4 @@ def undo_move(encoded_move, undo1, undo2, board):
     board.black_occ = black_occ
     board.occupied = occupied
     board.en_passant = old_en_passant
+    board.castling = old_castling
