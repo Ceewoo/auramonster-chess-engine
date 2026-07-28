@@ -43,10 +43,10 @@ def generate_moves(board):
                 target, attacks = pop_lsb(attacks)
 
                 if target >= 56:
-                    moves.append(encode_move(square, target, CAPTURE_PROMOTE_N))
-                    moves.append(encode_move(square, target, CAPTURE_PROMOTE_B))
-                    moves.append(encode_move(square, target, CAPTURE_PROMOTE_R))
-                    moves.append(encode_move(square, target, CAPTURE_PROMOTE_Q))
+                    moves.append(encode_move(square, target, PROMOTE_N))
+                    moves.append(encode_move(square, target, PROMOTE_B))
+                    moves.append(encode_move(square, target, PROMOTE_R))
+                    moves.append(encode_move(square, target, PROMOTE_Q))
 
                 elif board.en_passant == target:
                     moves.append(encode_move(square, target, EN_PASSANT))
