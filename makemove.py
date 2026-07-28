@@ -153,13 +153,14 @@ def undo_move(encoded_move, undo1, undo2, board):
 
     if side_to_move == WHITE:
         if flag == EN_PASSANT:
+            board.pieces[to_sq] = EMPTY
             board.pieces[to_sq - 8] = captured
         else:
             board.pieces[to_sq] = captured
 
         if captured != EMPTY:
             if flag == EN_PASSANT:
-                board.bitboards[captured] ^= to_bb >> 8
+                board.bitboards[captured] ^= to_bb << 8
             else:
                 board.bitboards[captured] ^= to_bb
 
@@ -185,13 +186,15 @@ def undo_move(encoded_move, undo1, undo2, board):
 
     else:
         if flag == EN_PASSANT:
+            board.pieces[to_sq] = EMPTY
             board.pieces[to_sq + 8] = captured
         else:
             board.pieces[to_sq] = captured
 
         if captured != EMPTY:
             if flag == EN_PASSANT:
-                board.bitboards[captured] ^= to_bb << 8
+                board.pieces[to_sq] = EMPTY
+                board.bitboards[captured] ^= to_bb >> 8
             else:
                 board.bitboards[captured] ^= to_bb
 
@@ -218,7 +221,8 @@ def undo_move(encoded_move, undo1, undo2, board):
     board.bitboards[piece] ^= from_bb
     if flag >= PROMOTE_N:
         board.bitboards[promoted_piece] ^= to_bb
-    board.bitboards[piece] ^= to_bb
+    else:
+        board.bitboards[piece] ^= to_bb
 
     board.side_to_move = side_to_move
     board.white_occ = white_occ
