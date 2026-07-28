@@ -112,14 +112,14 @@ def generate_moves(board):
 
         for move in moves:
 
-            undo = make_move(move, board)
+            undo1, undo2 = make_move(move, board)
 
             king_square = board.bitboards[WHITE_KING].bit_length() - 1
 
             if not is_square_attacked(king_square, BLACK, board):
                 legal_moves.append(move)
 
-            undo_move(undo, board)
+            undo_move(move, undo1, undo2, board)
 
     else:
 
@@ -205,13 +205,13 @@ def generate_moves(board):
 
         for move in moves:
 
-            undo = make_move(move, board)
+            undo1, undo2 = make_move(move, board)
 
             king_square = board.bitboards[BLACK_KING].bit_length() - 1
 
             if not is_square_attacked(king_square, WHITE, board):
                 legal_moves.append(move)
 
-            undo_move(undo, board)
+            undo_move(move, undo1, undo2, board)
 
     return legal_moves
