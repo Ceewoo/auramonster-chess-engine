@@ -42,17 +42,33 @@ def generate_moves(board):
             while attacks:
                 target, attacks = pop_lsb(attacks)
 
-                moves.append(encode_move(square, target))
+                if target >= 56:
+                    moves.append(encode_move(square, target, CAPTURE_PROMOTE_N))
+                    moves.append(encode_move(square, target, CAPTURE_PROMOTE_B))
+                    moves.append(encode_move(square, target, CAPTURE_PROMOTE_R))
+                    moves.append(encode_move(square, target, CAPTURE_PROMOTE_Q))
+
+                elif board.en_passant == target:
+                    moves.append(encode_move(square, target, EN_PASSANT))
+
+                else:
+                    moves.append(encode_move(square, target))
 
             while pushes:
                 target, pushes = pop_lsb(pushes)
 
-                moves.append(encode_move(square, target))
+                if target >= 56:
+                    moves.append(encode_move(square, target, PROMOTE_N))
+                    moves.append(encode_move(square, target, PROMOTE_B))
+                    moves.append(encode_move(square, target, PROMOTE_R))
+                    moves.append(encode_move(square, target, PROMOTE_Q))
+                else:
+                    moves.append(encode_move(square, target))
 
             while double_pushes:
                 target, double_pushes = pop_lsb(double_pushes)
 
-                moves.append(encode_move(square, target))
+                moves.append(encode_move(square, target, DOUBLE_PAWN_PUSH))
 
         while knights:
             square, knights = pop_lsb(knights)
