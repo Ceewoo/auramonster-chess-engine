@@ -28,20 +28,20 @@ def make_move(encoded_move, board):
             board.pieces[to_sq - 8] = EMPTY
 
         elif flag == KING_CASTLE:
-            board.bitboards[WHITE_ROOK] ^= 1 << 63
-            board.bitboards[WHITE_ROOK] ^= 1 << 61
-            board.white_occ ^= 1 << 63
-            board.white_occ ^= 1 << 61
-            board.pieces[63] = EMPTY
-            board.pieces[61] = WHITE_ROOK
+            board.bitboards[WHITE_ROOK] ^= 1 << 7
+            board.bitboards[WHITE_ROOK] ^= 1 << 5
+            board.white_occ ^= 1 << 7
+            board.white_occ ^= 1 << 5
+            board.pieces[7] = EMPTY
+            board.pieces[5] = WHITE_ROOK
 
         elif flag == QUEEN_CASTLE:
-            board.bitboards[WHITE_ROOK] ^= 1 << 56
-            board.bitboards[WHITE_ROOK] ^= 1 << 59
-            board.white_occ ^= 1 << 56
-            board.white_occ ^= 1 << 59
-            board.pieces[56] = EMPTY
-            board.pieces[59] = WHITE_ROOK
+            board.bitboards[WHITE_ROOK] ^= 1 << 0
+            board.bitboards[WHITE_ROOK] ^= 1 << 3
+            board.white_occ ^= 1 << 0
+            board.white_occ ^= 1 << 3
+            board.pieces[0] = EMPTY
+            board.pieces[3] = WHITE_ROOK
 
         elif flag >= PROMOTE_N:
             promoted_piece = {
@@ -80,20 +80,20 @@ def make_move(encoded_move, board):
             board.pieces[to_sq + 8] = EMPTY
 
         elif flag == KING_CASTLE:
-            board.bitboards[BLACK_ROOK] ^= 1 << 7
-            board.bitboards[BLACK_ROOK] ^= 1 << 5
-            board.black_occ ^= 1 << 7
-            board.black_occ ^= 1 << 5
-            board.pieces[7] = EMPTY
-            board.pieces[5] = BLACK_ROOK
+            board.bitboards[BLACK_ROOK] ^= 1 << 63
+            board.bitboards[BLACK_ROOK] ^= 1 << 61
+            board.black_occ ^= 1 << 63
+            board.black_occ ^= 1 << 61
+            board.pieces[63] = EMPTY
+            board.pieces[61] = BLACK_ROOK
 
         elif flag == QUEEN_CASTLE:
-            board.bitboards[BLACK_ROOK] ^= 1 << 0
-            board.bitboards[BLACK_ROOK] ^= 1 << 3
-            board.black_occ ^= 1 << 0
-            board.black_occ ^= 1 << 3
-            board.pieces[0] = EMPTY
-            board.pieces[3] = BLACK_ROOK
+            board.bitboards[BLACK_ROOK] ^= 1 << 56
+            board.bitboards[BLACK_ROOK] ^= 1 << 59
+            board.black_occ ^= 1 << 56
+            board.black_occ ^= 1 << 59
+            board.pieces[56] = EMPTY
+            board.pieces[59] = BLACK_ROOK
 
         elif flag >= PROMOTE_N:
             promoted_piece = {
