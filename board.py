@@ -14,7 +14,7 @@ class Board:
 
         self.side_to_move = WHITE
 
-        self.pins = {}
+        self.pin_masks = [0] * 64
         self.check_mask = 0
         self.num_checkers = 0
 

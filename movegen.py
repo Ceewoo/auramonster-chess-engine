@@ -226,7 +226,9 @@ def generate_moves(board):
 
         while attacks:
             target, attacks = pop_lsb(attacks)
-            moves.append(encode_move(king_square, target))
+
+            if not square_attacked(target, WHITE, board):
+                moves.append(encode_move(king_square, target))
 
         while pawns:
             square, pawns = pop_lsb(pawns)
@@ -241,6 +243,12 @@ def generate_moves(board):
             pushes &= ~board.occupied
             double_pushes &= ~board.occupied
             double_pushes &= ~(board.occupied >> 8)
+
+            pin_mask = pin_masks[square]
+            if pin_mask:
+                attacks &= pin_mask
+                pushes &= pin_mask
+                double_pushes &= pin_mask
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
