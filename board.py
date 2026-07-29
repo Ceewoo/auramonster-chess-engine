@@ -14,6 +14,10 @@ class Board:
 
         self.side_to_move = WHITE
 
+        self.pins = {}
+        self.check_mask = 0
+        self.num_checkers = 0
+
         self.castling = 0
         self.en_passant = -1
 
@@ -84,9 +88,6 @@ class Board:
         else:
             self.side_to_move = BLACK
 
-        print(bin(self.castling))
-        print(castling)
-
         if "K" in castling:
             self.castling |= WK
         if "Q" in castling:
@@ -95,8 +96,6 @@ class Board:
             self.castling |= BK
         if "q" in castling:
             self.castling |= BQ
-
-        print(bin(self.castling))
 
         if en_passant != "-":
             ep_square = REVERSE_FILES[en_passant[0]] + int(en_passant[1]) * 8
