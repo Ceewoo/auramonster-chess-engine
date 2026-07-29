@@ -119,8 +119,65 @@ DIAGONAL_DIRS = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
 
 ORTHOGONAL_DIRS = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
+TRUE_DIAGONAL_DIRS = [9, 7, -7, -9]
+
+TRUE_ORTHOGONAL_DIRS = [8, 1, -1, -8]
+
 # Conversions used for uci conversion
 
 FILES = ["a", "b", "c", "d", "e", "f", "g", "h"]
 
 REVERSE_FILES = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
+
+
+# Computes the squares between an attacker and its target
+
+between = [[0] * 64 for _ in range(64)]
+
+for attacker_square in range(64):
+    rank_attacker, file_attacker = divmod(attacker_square, 8)
+
+    for target_square in range(64):
+        if attacker_square == target_square:
+            continue
+
+        rank_target, file_target = divmod(target_square, 8)
+
+        dr = rank_target - rank_attacker
+        df = file_target - file_attacker
+
+        step = None
+
+        if rank_attacker == rank_target:
+            if df > 0:
+                step = 1
+            else:
+                step = -1
+
+        elif file_attacker == file_target:
+            if dr > 0:
+                step = 8
+            else:
+                step = -8
+
+        elif abs(dr) == abs(df):
+            if dr > 0 and df > 0:
+                step = 9
+            elif dr > 0 and df < 0:
+                step = 7
+            elif dr < 0 and df < 0:
+                step = -9
+            else:
+                step = -7
+
+        if step is None:
+            continue
+
+        sq = attacker_square + step
+        mask = 0
+
+        while sq != target_square:
+            mask |= 1 << sq
+            sq += step
+
+        between[attacker_square][target_square] = mask
