@@ -6,6 +6,8 @@ from basefunctions import pop_lsb
 def check_status(board):
 
     board.pins = {}
+    board.check_mask = 0
+    board.num_checkers = 0
 
     if board.side_to_move == WHITE:
         by_side = BLACK
