@@ -26,9 +26,9 @@ def on_ray(prev_sq, sq, step):
     if step in (8, -8):
         return pf == cf
     if step in (9, -9):
-        return abs(cr - pr) == 1 and abs(cf - pf) == 1
+        return abs(cr - pr) == 1 and abs(cf - pf) == 1 and (cr - pr) == (cf - pf)
     if step in (7, -7):
-        return abs(cr - pr) == 1 and abs(cf - pf) == 1
+        return abs(cr - pr) == 1 and abs(cf - pf) == 1 and (cr - pr) == -(cf - pf)
 
     return False
 
