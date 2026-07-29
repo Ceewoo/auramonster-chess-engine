@@ -23,8 +23,8 @@ def make_move(encoded_move, board):
 
         if flag == EN_PASSANT:
             captured = board.pieces[to_sq - 8]
-            board.bitboards[captured] ^= to_bb << 8
-            board.black_occ ^= to_bb << 8
+            board.bitboards[captured] ^= to_bb >> 8
+            board.black_occ ^= to_bb >> 8
             board.pieces[to_sq - 8] = EMPTY
 
         elif flag == KING_CASTLE:
@@ -66,9 +66,9 @@ def make_move(encoded_move, board):
                 board.bitboards[captured] ^= to_bb
                 board.black_occ ^= to_bb
                 if captured == BLACK_ROOK:
-                    if to_sq == 0:
+                    if to_sq == 56:
                         board.castling &= ~BQ
-                    elif to_sq == 7:
+                    elif to_sq == 63:
                         board.castling &= ~BK
 
         if piece == WHITE_KING:
@@ -85,7 +85,6 @@ def make_move(encoded_move, board):
         board.side_to_move = BLACK
 
     else:
-
         if flag == DOUBLE_PAWN_PUSH:
             board.en_passant = to_sq + 8
         else:
@@ -93,8 +92,9 @@ def make_move(encoded_move, board):
 
         if flag == EN_PASSANT:
             captured = board.pieces[to_sq + 8]
-            board.bitboards[captured] ^= to_bb >> 8
-            board.white_occ ^= to_bb >> 8
+
+            board.bitboards[captured] ^= to_bb << 8
+            board.white_occ ^= to_bb << 8
             board.pieces[to_sq + 8] = EMPTY
 
         elif flag == KING_CASTLE:
@@ -196,7 +196,7 @@ def undo_move(encoded_move, undo1, undo2, board):
 
         if captured != EMPTY:
             if flag == EN_PASSANT:
-                board.bitboards[captured] ^= to_bb << 8
+                board.bitboards[captured] ^= to_bb >> 8
             else:
                 board.bitboards[captured] ^= to_bb
 
@@ -229,8 +229,7 @@ def undo_move(encoded_move, undo1, undo2, board):
 
         if captured != EMPTY:
             if flag == EN_PASSANT:
-                board.pieces[to_sq] = EMPTY
-                board.bitboards[captured] ^= to_bb >> 8
+                board.bitboards[captured] ^= to_bb << 8
             else:
                 board.bitboards[captured] ^= to_bb
 
