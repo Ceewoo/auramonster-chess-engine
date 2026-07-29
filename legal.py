@@ -5,7 +5,7 @@ from basefunctions import pop_lsb
 
 def check_status(board):
 
-    board.pins = {}
+    board.pin_masks = [0] * 64
     board.check_mask = 0
     board.num_checkers = 0
 
@@ -98,10 +98,10 @@ def check_status(board):
                     if blocker is not None:
                         if board.side_to_move == WHITE:
                             if piece in (BLACK_ROOK, BLACK_QUEEN):
-                                board.pins[blocker] = between[king_square][sq] | bb
+                                board.pin_masks[blocker] = between[king_square][sq] | bb
                         else:
                             if piece in (WHITE_ROOK, WHITE_QUEEN):
-                                board.pins[blocker] = between[king_square][sq] | bb
+                                board.pin_masks[blocker] = between[king_square][sq] | bb
 
                     break
 
@@ -130,10 +130,10 @@ def check_status(board):
                     if blocker is not None:
                         if board.side_to_move == WHITE:
                             if piece in (BLACK_BISHOP, BLACK_QUEEN):
-                                board.pins[blocker] = between[king_square][sq] | bb
+                                board.pin_masks[blocker] = between[king_square][sq] | bb
                         else:
                             if piece in (WHITE_BISHOP, WHITE_QUEEN):
-                                board.pins[blocker] = between[king_square][sq] | bb
+                                board.pin_masks[blocker] = between[king_square][sq] | bb
 
                     break
 
