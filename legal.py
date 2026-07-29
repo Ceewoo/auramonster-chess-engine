@@ -3,10 +3,21 @@ from constants import *
 from basefunctions import pop_lsb
 
 
+def add_check(board, king_square, checker_square, slider=False):
+    if board.num_checkers == 0:
+        board.check_mask = 0
+
+    if slider:
+        board.check_mask |= between[checker_square][king_square]
+
+    board.check_mask |= 1 << checker_square
+    board.num_checkers += 1
+
+
 def check_status(board):
 
     board.pin_masks = [0] * 64
-    board.check_mask = 0
+    board.check_mask = (1 << 64) - 1
     board.num_checkers = 0
 
     if board.side_to_move == WHITE:
@@ -39,39 +50,31 @@ def check_status(board):
         square, pawns = pop_lsb(pawns)
 
         if pawn_attacks(square, by_side) & king_bb:
-            board.check_mask |= 1 << square
-            board.num_checkers += 1
+            add_check(board, king_square, square)
 
     while knights:
         square, knights = pop_lsb(knights)
 
         if knight_attacks(square) & king_bb:
-            board.check_mask |= 1 << square
-            board.num_checkers += 1
+            add_check(board, king_square, square)
 
     while bishops:
         square, bishops = pop_lsb(bishops)
 
         if bishop_attacks(square, board.occupied) & king_bb:
-            board.check_mask |= between[square][king_square]
-            board.check_mask |= 1 << square
-            board.num_checkers += 1
+            add_check(board, king_square, square, slider=True)
 
     while rooks:
         square, rooks = pop_lsb(rooks)
 
         if rook_attacks(square, board.occupied) & king_bb:
-            board.check_mask |= between[square][king_square]
-            board.check_mask |= 1 << square
-            board.num_checkers += 1
+            add_check(board, king_square, square, slider=True)
 
     while queens:
         square, queens = pop_lsb(queens)
 
         if queen_attacks(square, board.occupied) & king_bb:
-            board.check_mask |= between[square][king_square]
-            board.check_mask |= 1 << square
-            board.num_checkers += 1
+            add_check(board, king_square, square, slider=True)
 
     # Pin scan
 
