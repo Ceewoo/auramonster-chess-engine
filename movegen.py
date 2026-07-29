@@ -2,15 +2,45 @@ from attacks import *
 from constants import *
 from basefunctions import pop_lsb, encode_move
 from makemove import make_move, undo_move
-from legal import square_attacked
+from legal import *
 
 
 def generate_moves(board):
 
+    check_status(board)
+
     moves = []
-    legal_moves = []
+
+    if board.num_checkers == 2:  # only king moves available
+        if board.side_to_move == WHITE:
+            king_square = board.bitboards[WHITE_KING].bit_length() - 1
+            attacks = king_attacks(king_square)
+
+            attacks &= ~board.white_occ
+
+            while attacks:
+                target, attacks = pop_lsb(attacks)
+                if not square_attacked(target, BLACK, board):
+                    moves.append(encode_move(king_square, target))
+
+            return moves
+
+        else:
+            king_square = board.bitboards[BLACK_KING].bit_length() - 1
+            attacks = king_attacks(king_square)
+
+            attacks &= ~board.black_occ
+
+            while attacks:
+                target, attacks = pop_lsb(attacks)
+                if not square_attacked(target, WHITE, board):
+                    moves.append(encode_move(king_square, target))
+
+            return moves
 
     side_to_move = board.side_to_move
+    check_mask = board.check_mask
+    pin_masks = board.pin_masks
 
     if side_to_move == WHITE:
 
@@ -45,7 +75,9 @@ def generate_moves(board):
 
         while attacks:
             target, attacks = pop_lsb(attacks)
-            moves.append(encode_move(king_square, target))
+
+            if not square_attacked(target, BLACK, board):
+                moves.append(encode_move(king_square, target))
 
         while pawns:
             square, pawns = pop_lsb(pawns)
@@ -60,6 +92,10 @@ def generate_moves(board):
             pushes &= ~board.occupied
             double_pushes &= ~board.occupied
             double_pushes &= ~(board.occupied << 8)
+
+            attacks &= check_mask
+            pushes &= check_mask
+            double_pushes &= check_mask
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
@@ -96,6 +132,7 @@ def generate_moves(board):
             attacks = knight_attacks(square)
 
             attacks &= ~board.white_occ
+            attacks &= check_mask
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
@@ -106,6 +143,11 @@ def generate_moves(board):
             attacks = bishop_attacks(square, board.occupied)
 
             attacks &= ~board.white_occ
+            attacks &= check_mask
+
+            pin_mask = pin_masks[pin_mask]
+            if pin_mask is not None:
+                attacks &= pin_mask
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
@@ -116,6 +158,11 @@ def generate_moves(board):
             attacks = rook_attacks(square, board.occupied)
 
             attacks &= ~board.white_occ
+            attacks &= check_mask
+
+            pin_mask = pin_masks[pin_mask]
+            if pin_mask is not None:
+                attacks &= pin_mask
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
@@ -126,21 +173,15 @@ def generate_moves(board):
             attacks = queen_attacks(square, board.occupied)
 
             attacks &= ~board.white_occ
+            attacks &= check_mask
+
+            pin_mask = pin_masks[pin_mask]
+            if pin_mask is not None:
+                attacks &= pin_mask
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
                 moves.append(encode_move(square, target))
-
-        for move in moves:
-
-            undo1, undo2 = make_move(move, board)
-
-            king_square = board.bitboards[WHITE_KING].bit_length() - 1
-
-            if not square_attacked(king_square, BLACK, board):
-                legal_moves.append(move)
-
-            undo_move(move, undo1, undo2, board)
 
     else:
 
