@@ -14,31 +14,41 @@ def generate_moves(board):
     if board.num_checkers == 2:  # only king moves available
         if board.side_to_move == WHITE:
             king_square = board.bitboards[WHITE_KING].bit_length() - 1
+            king_bb = 1 << king_square
             attacks = king_attacks(king_square)
 
             attacks &= ~board.white_occ
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
-                board.bitboards[WHITE_KING] ^= king_square
+                board.bitboards[WHITE_KING] ^= king_bb
+                board.white_occ ^= king_bb
+                board.occupied ^= king_bb
                 if not square_attacked(target, BLACK, board):
                     moves.append(encode_move(king_square, target))
-                board.bitboards[WHITE_KING] ^= king_square
+                board.bitboards[WHITE_KING] ^= king_bb
+                board.white_occ ^= king_bb
+                board.occupied ^= king_bb
 
             return moves
 
         else:
             king_square = board.bitboards[BLACK_KING].bit_length() - 1
+            king_bb = 1 << king_square
             attacks = king_attacks(king_square)
 
             attacks &= ~board.black_occ
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
-                board.bitboards[BLACK_KING] ^= king_square
+                board.bitboards[BLACK_KING] ^= king_bb
+                board.black_occ ^= king_bb
+                board.occupied ^= king_bb
                 if not square_attacked(target, WHITE, board):
                     moves.append(encode_move(king_square, target))
-                board.bitboards[BLACK_KING] ^= king_square
+                board.bitboards[BLACK_KING] ^= king_bb
+                board.black_occ ^= king_bb
+                board.occupied ^= king_bb
 
             return moves
 
@@ -55,6 +65,7 @@ def generate_moves(board):
         queens = board.bitboards[WHITE_QUEEN]
 
         king_square = board.bitboards[WHITE_KING].bit_length() - 1
+        king_bb = 1 << king_square
         attacks = king_attacks(king_square)
 
         attacks &= ~board.white_occ
@@ -80,10 +91,14 @@ def generate_moves(board):
         while attacks:
             target, attacks = pop_lsb(attacks)
 
-            board.bitboards[WHITE_KING] ^= king_square
+            board.bitboards[WHITE_KING] ^= king_bb
+            board.white_occ ^= king_bb
+            board.occupied ^= king_bb
             if not square_attacked(target, BLACK, board):
                 moves.append(encode_move(king_square, target))
-            board.bitboards[WHITE_KING] ^= king_square
+            board.bitboards[WHITE_KING] ^= king_bb
+            board.white_occ ^= king_bb
+            board.occupied ^= king_bb
 
         while pawns:
             square, pawns = pop_lsb(pawns)
@@ -208,6 +223,7 @@ def generate_moves(board):
         queens = board.bitboards[BLACK_QUEEN]
 
         king_square = board.bitboards[BLACK_KING].bit_length() - 1
+        king_bb = 1 << king_square
         attacks = king_attacks(king_square)
 
         attacks &= ~board.black_occ
@@ -233,10 +249,14 @@ def generate_moves(board):
         while attacks:
             target, attacks = pop_lsb(attacks)
 
-            board.bitboards[BLACK_KING] ^= king_square
+            board.bitboards[BLACK_KING] ^= king_bb
+            board.black_occ ^= king_bb
+            board.occupied ^= king_bb
             if not square_attacked(target, WHITE, board):
                 moves.append(encode_move(king_square, target))
-            board.bitboards[BLACK_KING] ^= king_square
+            board.bitboards[BLACK_KING] ^= king_bb
+            board.black_occ ^= king_bb
+            board.occupied ^= king_bb
 
         while pawns:
             square, pawns = pop_lsb(pawns)
