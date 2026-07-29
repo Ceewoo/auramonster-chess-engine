@@ -62,7 +62,7 @@ def generate_moves(board):
                     and not square_attacked(5, BLACK, board)
                     and not square_attacked(6, BLACK, board)
                 ):
-                    legal_moves.append(encode_move(4, 6, KING_CASTLE))
+                    moves.append(encode_move(4, 6, KING_CASTLE))
 
         if board.castling & WQ:
             if not (board.occupied & ((1 << 3) | (1 << 2) | (1 << 1))):
@@ -71,7 +71,7 @@ def generate_moves(board):
                     and not square_attacked(3, BLACK, board)
                     and not square_attacked(2, BLACK, board)
                 ):
-                    legal_moves.append(encode_move(4, 2, QUEEN_CASTLE))
+                    moves.append(encode_move(4, 2, QUEEN_CASTLE))
 
         while attacks:
             target, attacks = pop_lsb(attacks)
@@ -96,6 +96,12 @@ def generate_moves(board):
             attacks &= check_mask
             pushes &= check_mask
             double_pushes &= check_mask
+
+            pin_mask = pin_masks[square]
+            if pin_mask:
+                attacks &= pin_mask
+                pushes &= pin_mask
+                double_pushes &= pin_mask
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
@@ -134,6 +140,10 @@ def generate_moves(board):
             attacks &= ~board.white_occ
             attacks &= check_mask
 
+            pin_mask = pin_masks[square]
+            if pin_mask:
+                attacks = 0
+
             while attacks:
                 target, attacks = pop_lsb(attacks)
                 moves.append(encode_move(square, target))
@@ -145,8 +155,8 @@ def generate_moves(board):
             attacks &= ~board.white_occ
             attacks &= check_mask
 
-            pin_mask = pin_masks[pin_mask]
-            if pin_mask is not None:
+            pin_mask = pin_masks[square]
+            if pin_mask:
                 attacks &= pin_mask
 
             while attacks:
@@ -160,8 +170,8 @@ def generate_moves(board):
             attacks &= ~board.white_occ
             attacks &= check_mask
 
-            pin_mask = pin_masks[pin_mask]
-            if pin_mask is not None:
+            pin_mask = pin_masks[square]
+            if pin_mask:
                 attacks &= pin_mask
 
             while attacks:
@@ -175,8 +185,8 @@ def generate_moves(board):
             attacks &= ~board.white_occ
             attacks &= check_mask
 
-            pin_mask = pin_masks[pin_mask]
-            if pin_mask is not None:
+            pin_mask = pin_masks[square]
+            if pin_mask:
                 attacks &= pin_mask
 
             while attacks:
@@ -203,7 +213,7 @@ def generate_moves(board):
                     and not square_attacked(61, WHITE, board)
                     and not square_attacked(62, WHITE, board)
                 ):
-                    legal_moves.append(encode_move(60, 62, KING_CASTLE))
+                    moves.append(encode_move(60, 62, KING_CASTLE))
 
         if board.castling & BQ:
             if not (board.occupied & ((1 << 59) | (1 << 58) | (1 << 57))):
@@ -212,7 +222,7 @@ def generate_moves(board):
                     and not square_attacked(59, WHITE, board)
                     and not square_attacked(58, WHITE, board)
                 ):
-                    legal_moves.append(encode_move(60, 58, QUEEN_CASTLE))
+                    moves.append(encode_move(60, 58, QUEEN_CASTLE))
 
         while attacks:
             target, attacks = pop_lsb(attacks)
@@ -267,6 +277,11 @@ def generate_moves(board):
             attacks = knight_attacks(square)
 
             attacks &= ~board.black_occ
+            attacks &= check_mask
+
+            pin_mask = pin_masks[square]
+            if pin_mask:
+                attacks = 0
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
@@ -277,6 +292,11 @@ def generate_moves(board):
             attacks = bishop_attacks(square, board.occupied)
 
             attacks &= ~board.black_occ
+            attacks &= check_mask
+
+            pin_mask = pin_masks[square]
+            if pin_mask:
+                attacks &= pin_mask
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
@@ -287,6 +307,11 @@ def generate_moves(board):
             attacks = rook_attacks(square, board.occupied)
 
             attacks &= ~board.black_occ
+            attacks &= check_mask
+
+            pin_mask = pin_masks[square]
+            if pin_mask:
+                attacks &= pin_mask
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
@@ -297,20 +322,14 @@ def generate_moves(board):
             attacks = queen_attacks(square, board.occupied)
 
             attacks &= ~board.black_occ
+            attacks &= check_mask
+
+            pin_mask = pin_masks[square]
+            if pin_mask:
+                attacks &= pin_mask
 
             while attacks:
                 target, attacks = pop_lsb(attacks)
                 moves.append(encode_move(square, target))
 
-        for move in moves:
-
-            undo1, undo2 = make_move(move, board)
-
-            king_square = board.bitboards[BLACK_KING].bit_length() - 1
-
-            if not square_attacked(king_square, WHITE, board):
-                legal_moves.append(move)
-
-            undo_move(move, undo1, undo2, board)
-
-    return legal_moves
+    return moves
