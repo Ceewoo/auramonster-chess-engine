@@ -12,7 +12,7 @@ def check_status(board):
     if board.side_to_move == WHITE:
         by_side = BLACK
         own_occ = board.white_occ
-        king_square = pop_lsb(board.bitboards[WHITE_KING])  # [0] if it crashes
+        king_square = pop_lsb(board.bitboards[WHITE_KING])[0]
         king_bb = 1 << king_square
 
         pawns = board.bitboards[BLACK_PAWN]
@@ -24,7 +24,7 @@ def check_status(board):
     else:
         by_side = WHITE
         own_occ = board.black_occ
-        king_square = pop_lsb(board.bitboards[BLACK_KING])  # [0] if it crashes
+        king_square = pop_lsb(board.bitboards[BLACK_KING])[0]
         king_bb = 1 << king_square
 
         pawns = board.bitboards[WHITE_PAWN]
