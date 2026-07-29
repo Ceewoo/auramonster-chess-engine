@@ -272,6 +272,10 @@ def generate_moves(board):
             double_pushes &= ~board.occupied
             double_pushes &= ~(board.occupied >> 8)
 
+            attacks &= check_mask
+            pushes &= check_mask
+            double_pushes &= check_mask
+
             pin_mask = pin_masks[square]
             if pin_mask:
                 attacks &= pin_mask
