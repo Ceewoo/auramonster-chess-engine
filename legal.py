@@ -14,6 +14,25 @@ def add_check(board, king_square, checker_square, slider=False):
     board.num_checkers += 1
 
 
+def on_ray(prev_sq, sq, step):
+    if not (0 <= sq <= 63):
+        return False
+
+    pr, pf = divmod(prev_sq, 8)
+    cr, cf = divmod(sq, 8)
+
+    if step in (1, -1):
+        return pr == cr
+    if step in (8, -8):
+        return pf == cf
+    if step in (9, -9):
+        return abs(cr - pr) == 1 and abs(cf - pf) == 1
+    if step in (7, -7):
+        return abs(cr - pr) == 1 and abs(cf - pf) == 1
+
+    return False
+
+
 def check_status(board):
 
     board.pin_masks = [0] * 64
@@ -23,7 +42,7 @@ def check_status(board):
     if board.side_to_move == WHITE:
         by_side = BLACK
         own_occ = board.white_occ
-        king_square = pop_lsb(board.bitboards[WHITE_KING])[0]
+        king_square = board.bitboards[WHITE_KING].bit_length() - 1
         king_bb = 1 << king_square
 
         pawns = board.bitboards[BLACK_PAWN]
@@ -35,7 +54,7 @@ def check_status(board):
     else:
         by_side = WHITE
         own_occ = board.black_occ
-        king_square = pop_lsb(board.bitboards[BLACK_KING])[0]
+        king_square = board.bitboards[BLACK_KING].bit_length() - 1
         king_bb = 1 << king_square
 
         pawns = board.bitboards[WHITE_PAWN]
@@ -82,7 +101,7 @@ def check_status(board):
         sq = king_square + step
         blocker = None
 
-        while 0 <= sq <= 63:
+        while on_ray(sq - step, sq, step):
             bb = 1 << sq
 
             if board.occupied & bb:
@@ -114,7 +133,7 @@ def check_status(board):
         sq = king_square + step
         blocker = None
 
-        while 0 <= sq <= 63:
+        while on_ray(sq - step, sq, step):
             bb = 1 << sq
 
             if board.occupied & bb:
